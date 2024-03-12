@@ -9,6 +9,7 @@ class Model
 private:
 	std::vector<Vec3f> verts_;
 	std::vector<std::vector<int>> faces_;
+	std::vector<Vec2f> uv_; // For texture coordinates
 
 public:
 	Model(const char *filename);
@@ -17,6 +18,9 @@ public:
 	int nfaces();
 	Vec3f vert(int i);
 	std::vector<int> face(int idx);
+
+	int nuvs();
+	Vec2f uv(int i);
 };
 
 #endif //__MODEL_H__

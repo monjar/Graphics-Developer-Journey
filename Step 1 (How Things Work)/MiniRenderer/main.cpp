@@ -125,8 +125,8 @@ void DrawModelFilled(Model *model)
 
 		for (int j = 0; j < 3; j++)
 		{
-			pts[j] = world2screen(model->vert(face[j]));
-			world_coords[j] = model->vert(face[j]);
+			pts[j] = world2screen(model->vert(face[j * 2]));
+			world_coords[j] = model->vert(face[j * 2]);
 		}
 		Vec3f n = cross((world_coords[2] - world_coords[0]) , (world_coords[1] - world_coords[0]));
 		n.normalize();
@@ -187,14 +187,10 @@ int main(int argc, char **argv)
 {
 	Model *model = NULL;
 
-	if (argc == 2)
-	{
-		model = new Model(argv[1]);
-	}
-	else
-	{
-		model = new Model("Models/african_head.obj");
-	}
+	model = new Model("Models/head.obj");
+
+	TGAImage textureDiffuse = TGAImage();
+	textureDiffuse.read_tga_file("Models/head_diffuse.tga");
 	DrawModelFilled(model);
 	delete model;
 	return 0;
