@@ -5,7 +5,9 @@
 #include <math.h>
 #include "tgaimage.h"
 
-TGAImage::TGAImage() : data(NULL), width(0), height(0), bytespp(0) {}
+TGAImage::TGAImage() : data(NULL), width(0), height(0), bytespp(0)
+{
+}
 
 TGAImage::TGAImage(int w, int h, int bpp) : data(NULL), width(w), height(h), bytespp(bpp)
 {
@@ -14,8 +16,11 @@ TGAImage::TGAImage(int w, int h, int bpp) : data(NULL), width(w), height(h), byt
 	memset(data, 0, nbytes);
 }
 
-TGAImage::TGAImage(const TGAImage &img) : data(NULL), width(img.width), height(img.height), bytespp(img.bytespp)
+TGAImage::TGAImage(const TGAImage &img)
 {
+	width = img.width;
+	height = img.height;
+	bytespp = img.bytespp;
 	unsigned long nbytes = width * height * bytespp;
 	data = new unsigned char[nbytes];
 	memcpy(data, img.data, nbytes);
@@ -133,14 +138,14 @@ bool TGAImage::load_rle_data(std::ifstream &in)
 			chunkheader++;
 			for (int i = 0; i < chunkheader; i++)
 			{
-				in.read((char *)colorbuffer.bgra, bytespp);
+				in.read((char *)colorbuffer.raw, bytespp);
 				if (!in.good())
 				{
 					std::cerr << "an error occured while reading the header\n";
 					return false;
 				}
 				for (int t = 0; t < bytespp; t++)
-					data[currentbyte++] = colorbuffer.bgra[t];
+					data[currentbyte++] = colorbuffer.raw[t];
 				currentpixel++;
 				if (currentpixel > pixelcount)
 				{
@@ -152,7 +157,7 @@ bool TGAImage::load_rle_data(std::ifstream &in)
 		else
 		{
 			chunkheader -= 127;
-			in.read((char *)colorbuffer.bgra, bytespp);
+			in.read((char *)colorbuffer.raw, bytespp);
 			if (!in.good())
 			{
 				std::cerr << "an error occured while reading the header\n";
@@ -161,7 +166,7 @@ bool TGAImage::load_rle_data(std::ifstream &in)
 			for (int i = 0; i < chunkheader; i++)
 			{
 				for (int t = 0; t < bytespp; t++)
-					data[currentbyte++] = colorbuffer.bgra[t];
+					data[currentbyte++] = colorbuffer.raw[t];
 				currentpixel++;
 				if (currentpixel > pixelcount)
 				{
@@ -306,23 +311,13 @@ TGAColor TGAImage::get(int x, int y)
 	return TGAColor(data + (x + y * width) * bytespp, bytespp);
 }
 
-bool TGAImage::set(int x, int y, TGAColor &c)
+bool TGAImage::set(int x, int y, TGAColor c)
 {
 	if (!data || x < 0 || y < 0 || x >= width || y >= height)
 	{
 		return false;
 	}
-	memcpy(data + (x + y * width) * bytespp, c.bgra, bytespp);
-	return true;
-}
-
-bool TGAImage::set(int x, int y, const TGAColor &c)
-{
-	if (!data || x < 0 || y < 0 || x >= width || y >= height)
-	{
-		return false;
-	}
-	memcpy(data + (x + y * width) * bytespp, c.bgra, bytespp);
+	memcpy(data + (x + y * width) * bytespp, c.raw, bytespp);
 	return true;
 }
 
