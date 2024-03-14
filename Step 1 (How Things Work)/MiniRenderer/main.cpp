@@ -15,6 +15,23 @@ Model *model = NULL;
 int *zbuffer = NULL;
 Vec3f light_dir(0, 0, -1);
 Vec3f camera(0, 0, 2);
+Vec3f eye(0, -1, 3);
+Vec3f center(0, 0, 0);
+Vec3f up(0, 1, 0);
+
+Matrix lookat(Vec3f eye, Vec3f center, Vec3f up) {
+    Vec3f z = (eye-center).normalize();
+	Vec3f x = (up ^ z).normalize();
+	Vec3f y = (z ^ x).normalize();
+	Matrix ModelView = Matrix::identity(4);
+	for (int i=0; i<3; i++) {
+        ModelView[0][i] = x[i];
+        ModelView[1][i] = y[i];
+        ModelView[2][i] = z[i];
+        ModelView[i][3] = -center[i];
+    }
+	return ModelView;
+}
 
 Vec3f m2v(Matrix m)
 {
@@ -259,6 +276,7 @@ void DrawModelFilled(TGAImage &texture)
 		zbuffer[i] = std::numeric_limits<int>::min();
 	}
 
+	Matrix ModelView;
 	Matrix Projection = Matrix::identity(4);
 	Matrix ViewPort = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
 	Projection[3][2] = -1.f / camera.z;
