@@ -14,6 +14,35 @@ const int depth = 255;
 Model *model = NULL;
 int *zbuffer = NULL;
 Vec3f light_dir(0, 0, -1);
+Vec3f camera(0, 0, 2);
+
+Vec3f m2v(Matrix m)
+{
+	return Vec3f(m[0][0] / m[3][0], m[1][0] / m[3][0], m[2][0] / m[3][0]);
+}
+
+Matrix v2m(Vec3f v)
+{
+	Matrix m(4, 1);
+	m[0][0] = v.x;
+	m[1][0] = v.y;
+	m[2][0] = v.z;
+	m[3][0] = 1.f;
+	return m;
+}
+
+Matrix viewport(int x, int y, int w, int h)
+{
+	Matrix m = Matrix::identity(4);
+	m[0][3] = x + w / 2.f;
+	m[1][3] = y + h / 2.f;
+	m[2][3] = depth / 2.f;
+
+	m[0][0] = w / 2.f;
+	m[1][1] = h / 2.f;
+	m[2][2] = depth / 2.f;
+	return m;
+}
 
 void line(int x0, int y0, int x1, int y1, TGAImage &image, TGAColor color)
 {
@@ -230,49 +259,39 @@ void DrawModelFilled(TGAImage &texture)
 		zbuffer[i] = std::numeric_limits<int>::min();
 	}
 
-	{ // draw the model
-		TGAImage image(width, height, TGAImage::RGB);
-		for (int i = 0; i < model->nfaces(); i++)
-		{
-			std::vector<int> face = model->face(i);
-			Vec3i screen_coords[3];
-			Vec3f world_coords[3];
-			for (int j = 0; j < 3; j++)
-			{
-				Vec3f v = model->vert(face[j]);
-				screen_coords[j] = Vec3i((v.x + 1.) * width / 2., (v.y + 1.) * height / 2., (v.z + 1.) * depth / 2.);
-				world_coords[j] = v;
-			}
-			Vec3f n = (world_coords[2] - world_coords[0]) ^ (world_coords[1] - world_coords[0]);
-			n.normalize();
-			float intensity = n * light_dir;
-			if (intensity > 0)
-			{
-				Vec2i uv[3];
-				for (int k = 0; k < 3; k++)
-				{
-					uv[k] = model->uv(i, k);
-				}
-				triangle(screen_coords[0], screen_coords[1], screen_coords[2], uv[0], uv[1], uv[2], image, intensity, zbuffer);
-			}
-		}
+	Matrix Projection = Matrix::identity(4);
+	Matrix ViewPort = viewport(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
+	Projection[3][2] = -1.f / camera.z;
 
-		image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
-		image.write_tga_file("output.tga");
+	TGAImage image(width, height, TGAImage::RGB);
+	for (int i = 0; i < model->nfaces(); i++)
+	{
+		std::vector<int> face = model->face(i);
+		Vec3i screen_coords[3];
+		Vec3f world_coords[3];
+		for (int j = 0; j < 3; j++)
+		{
+			Vec3f v = model->vert(face[j]);
+			screen_coords[j] = m2v(ViewPort * Projection * v2m(v));
+			world_coords[j] = v;
+		}
+		Vec3f n = (world_coords[2] - world_coords[0]) ^ (world_coords[1] - world_coords[0]);
+		n.normalize();
+		float intensity = n * light_dir;
+		if (intensity > 0)
+		{
+			Vec2i uv[3];
+			for (int k = 0; k < 3; k++)
+			{
+				uv[k] = model->uv(i, k);
+			}
+			triangle(screen_coords[0], screen_coords[1], screen_coords[2], uv[0], uv[1], uv[2], image, intensity, zbuffer);
+		}
 	}
 
-	{ // dump z-buffer (debugging purposes only)
-		TGAImage zbimage(width, height, TGAImage::GRAYSCALE);
-		for (int i = 0; i < width; i++)
-		{
-			for (int j = 0; j < height; j++)
-			{
-				zbimage.set(i, j, TGAColor(zbuffer[i + j * width], 1));
-			}
-		}
-		zbimage.flip_vertically(); // i want to have the origin at the left bottom corner of the image
-		zbimage.write_tga_file("zbuffer.tga");
-	}
+	image.flip_vertically(); // i want to have the origin at the left bottom corner of the image
+	image.write_tga_file("output.tga");
+
 	delete model;
 	delete[] zbuffer;
 }
