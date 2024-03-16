@@ -2,9 +2,7 @@
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 
-
-int main() {
-
+GLFWwindow* initWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -12,8 +10,15 @@ int main() {
 
 
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "OpenGL Learning", NULL, NULL);
+	return glfwCreateWindow(800, 800, "OpenGL Learning", NULL, NULL);
+}
 
+
+
+int main() {
+
+	
+	GLFWwindow* window = initWindow();
 	if (window == NULL) {
 		std::cout << "Failed to create window =(";
 		glfwTerminate();
