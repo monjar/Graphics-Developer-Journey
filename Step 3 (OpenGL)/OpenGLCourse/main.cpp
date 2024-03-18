@@ -53,25 +53,33 @@ int main() {
 		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f // Upper corner
 	};
 
+	//Initialize Glad
 	gladLoadGL();
 
+	//Setting the viewport size
 	glViewport(0, 0, 800, 800);
 
+	//Create a reference to a shader of type vertex
 	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	//loading up the shader with source code
 	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	//compiling the loaded shader
 	glCompileShader(vertexShader);
 
+	//Doing the same thing for fragment shader
 	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragShader, 1, &fragmentShaderSource, NULL);
 	glCompileShader(fragShader);
 
-
+	//Create a reference for shader program
 	GLuint shaderProgram = glCreateProgram();
 
+	//Attach and link the 2 shaders to the program
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragShader);
 	glLinkProgram(shaderProgram);
 
+	//Delete the shaders because they are now in the pro	
 	glDeleteShader(vertexShader);
 	glDeleteShader(fragShader);
 
