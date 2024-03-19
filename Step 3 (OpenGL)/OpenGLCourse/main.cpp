@@ -8,6 +8,28 @@
 #include"EBO.h"
 
 
+
+
+// Vertices coordinates
+GLfloat vertices[] =
+{
+	-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Lower left corner
+	0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 0.0f, 1.0f, 0.0f,1.0f, // Lower right corner
+	0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f ,0.0f, 0.0f, 1.0f,1.0f, // Upper corner
+	-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,1.0f, 0.0f, 0.0f,1.0f,
+	0.5f / 2,  0.5f * float(sqrt(3)) / 6, 0.0f,0.0f, 1.0f, 0.0f,1.0f,
+	0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f, 0.0f, 0.0f, 1.0f,1.0f
+};
+
+
+GLuint indices[] = {
+
+
+	0,3,5,
+	3,2,4,
+	5, 4, 1
+};
+
 GLFWwindow* initWindow() {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -33,25 +55,7 @@ int main() {
 	glfwMakeContextCurrent(window);
 
 
-	// Vertices coordinates
-	GLfloat vertices[] =
-	{
-		-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower left corner
-		0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, // Lower right corner
-		0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f ,// Upper corner
-		-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,
-		0.5f / 2,  0.5f * float(sqrt(3)) / 6, 0.0f,
-		0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f,
-	};
 
-
-	GLuint indices[] = {
-
-
-		0,3,5,
-		3,2,4,
-		5, 4, 1
-	};
 
 	//Initialize Glad
 	gladLoadGL();
@@ -66,7 +70,8 @@ int main() {
 	VBO vbo1(vertices, sizeof(vertices));
 	EBO ebo1(indices, sizeof(indices));
 
-	vao1.LinkVBO(vbo1, 0);
+	vao1.LinkAttrib(vbo1, 0, 3, GL_FLOAT, 7 * sizeof(float), (void*)0);
+	vao1.LinkAttrib(vbo1, 1, 4, GL_FLOAT, 7 * sizeof(float), (void*)(3 * sizeof(float)));
 	vao1.Unbind();
 	vbo1.Unbind();
 	ebo1.Unbind();
