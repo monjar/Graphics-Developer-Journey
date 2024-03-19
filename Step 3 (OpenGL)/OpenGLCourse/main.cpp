@@ -76,12 +76,17 @@ int main() {
 	vbo1.Unbind();
 	ebo1.Unbind();
 
+	GLuint uniformId = glGetUniformLocation(shaderProgram.ID, "scale");
+
 	while (!glfwWindowShouldClose(window)) {
 
 		glClearColor(0.07f, 0.07f, 0.2f, 1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.Activate();
+		glUniform1f(uniformId, 0.5f);
+
+
 		vao1.Bind();
 		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);
