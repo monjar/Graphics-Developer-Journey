@@ -20,6 +20,10 @@ public:
 
 	void Activate();
 	void Delete();
+
+private:
+	// Checks if the different Shaders have compiled properly
+	void CompileErrors(unsigned int shader, const char* type);
 };
 
 #endif 
