@@ -13,10 +13,10 @@
 // Vertices coordinates
 GLfloat vertices[] =
 {
-	-0.5f, -0.5f , 0.0f,	1.0f, 0.0f, 0.0f, 1.0f, 
-	-0.5f, 0.5f , 0.0f,		0.0f, 1.0f, 0.0f,1.0f, 
-	0.5f, 0.5f , 0.0f,		0.0f, 0.0f, 1.0f,1.0f,
-	0.5f, -0.5f , 0.0f,		1.0f, 0.0f, 0.0f,1.0f,
+	-0.5f, -0.5f , 0.0f,	1.0f, 0.0f, 0.0f, 1.0f,		0.0f, 0.0f,
+	-0.5f, 0.5f , 0.0f,		0.0f, 1.0f, 0.0f,1.0f, 		0.0f, 1.0f,
+	0.5f, 0.5f , 0.0f,		0.0f, 0.0f, 1.0f,1.0f,		1.0f, 1.0f,
+	0.5f, -0.5f , 0.0f,		1.0f, 0.0f, 0.0f,1.0f,		1.0f, 0.0f,
 };
 
 
@@ -65,14 +65,41 @@ int main() {
 	VBO vbo1(vertices, sizeof(vertices));
 	EBO ebo1(indices, sizeof(indices));
 
-	vao1.LinkAttrib(vbo1, 0, 3, GL_FLOAT, 7 * sizeof(float), (void*)0);
-	vao1.LinkAttrib(vbo1, 1, 4, GL_FLOAT, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+	vao1.LinkAttrib(vbo1, 0, 3, GL_FLOAT, 9 * sizeof(float), (void*)0);
+	vao1.LinkAttrib(vbo1, 1, 4, GL_FLOAT, 9 * sizeof(float), (void*)(3 * sizeof(float)));
+	vao1.LinkAttrib(vbo1, 2, 2, GL_FLOAT, 9 * sizeof(float), (void*)(7 * sizeof(float)));
 	vao1.Unbind();
 	vbo1.Unbind();
 	ebo1.Unbind();
 
 	GLuint uniformId = glGetUniformLocation(shaderProgram.ID, "scale");
 
+
+	int imgWidth, imgHeight, numColorChannels;
+	stbi_set_flip_vertically_on_load(true);
+	unsigned char* bytes = stbi_load("birdy.png", &imgWidth, &imgHeight, &numColorChannels, 0);
+
+	GLuint texture;
+	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	//S ==> X / T ==> Y / I ==> Z
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, some4d vector as color);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imgWidth, imgHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bytes);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(bytes);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	GLuint tex0Uni = glGetUniformLocation(shaderProgram.ID, "tex0");
+	shaderProgram.Activate();
+	glUniform1i(tex0Uni, 0);
 	while (!glfwWindowShouldClose(window)) {
 
 		glClearColor(0.07f, 0.07f, 0.2f, 1.0);
@@ -80,6 +107,7 @@ int main() {
 
 		shaderProgram.Activate();
 		glUniform1f(uniformId, 0.5);
+		glBindTexture(GL_TEXTURE_2D, texture);
 
 
 		vao1.Bind();
