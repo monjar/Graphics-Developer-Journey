@@ -1,7 +1,7 @@
 #include<iostream>
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
-
+#include<stb/stb_image.h>
 #include"shaderClass.h"
 #include"VAO.h"
 #include"VBO.h"
@@ -13,21 +13,16 @@
 // Vertices coordinates
 GLfloat vertices[] =
 {
-	-0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // Lower left corner
-	0.5f, -0.5f * float(sqrt(3)) / 3, 0.0f, 0.0f, 1.0f, 0.0f,1.0f, // Lower right corner
-	0.0f, 0.5f * float(sqrt(3)) * 2 / 3, 0.0f ,0.0f, 0.0f, 1.0f,1.0f, // Upper corner
-	-0.5f / 2, 0.5f * float(sqrt(3)) / 6, 0.0f,1.0f, 0.0f, 0.0f,1.0f,
-	0.5f / 2,  0.5f * float(sqrt(3)) / 6, 0.0f,0.0f, 1.0f, 0.0f,1.0f,
-	0.0f, -0.5f * float(sqrt(3)) / 3, 0.0f, 0.0f, 0.0f, 1.0f,1.0f
+	-0.5f, -0.5f , 0.0f,	1.0f, 0.0f, 0.0f, 1.0f, 
+	-0.5f, 0.5f , 0.0f,		0.0f, 1.0f, 0.0f,1.0f, 
+	0.5f, 0.5f , 0.0f,		0.0f, 0.0f, 1.0f,1.0f,
+	0.5f, -0.5f , 0.0f,		1.0f, 0.0f, 0.0f,1.0f,
 };
 
 
 GLuint indices[] = {
-
-
-	0,3,5,
-	3,2,4,
-	5, 4, 1
+	0,2,1,
+	0,3,2
 };
 
 GLFWwindow* initWindow() {
@@ -84,11 +79,11 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		shaderProgram.Activate();
-		glUniform1f(uniformId, 0.5f);
+		glUniform1f(uniformId, 0.5);
 
 
 		vao1.Bind();
-		glDrawElements(GL_TRIANGLES, 9, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);
 
 		glfwPollEvents();
