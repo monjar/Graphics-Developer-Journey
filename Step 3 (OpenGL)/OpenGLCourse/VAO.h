@@ -13,7 +13,7 @@ public:
 	VAO();
 
 
-	void LinkAttrib(VBO VBO, GLuint layout, GLuint nComponents, GLenum type, GLsizeiptr stride, void* offset);
+	void LinkAttrib(VBO& VBO, GLuint layout, GLuint nComponents, GLenum type, GLsizeiptr stride, void* offset);
 
 	void Bind();
 	void Unbind();
