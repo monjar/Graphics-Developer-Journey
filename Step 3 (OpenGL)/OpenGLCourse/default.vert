@@ -5,9 +5,14 @@ layout (location = 2) in vec2 aTex;
 out vec4 color;
 out vec2 texCoord;
 uniform float scale;
+
+
+uniform mat4 modelMat;
+uniform mat4 viewMat;
+uniform mat4 projMat;
 void main()
 {
-   gl_Position = vec4(aPos.x + aPos.x*scale , aPos.y  + aPos.y*scale, aPos.z + aPos.z*scale, 1.0);
+   gl_Position = projMat * viewMat * modelMat * vec4(aPos, 1.0);
    color = aColor;
    texCoord = aTex;
 }

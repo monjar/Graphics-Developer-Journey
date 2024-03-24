@@ -7,6 +7,9 @@ namespace fs = std::filesystem;
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<stb/stb_image.h>
+#include<glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
 
 #include"Texture.h"
 #include"shaderClass.h"
@@ -14,7 +17,8 @@ namespace fs = std::filesystem;
 #include"VBO.h"
 #include"EBO.h"
 
-
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 800;
 
 // Vertices coordinates
 GLfloat vertices[] =
@@ -48,7 +52,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Create a GLFWwindow object of 800 by 800 pixels, naming it "YoutubeOpenGL"
-	GLFWwindow* window = glfwCreateWindow(800, 800, "YoutubeOpenGL", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "YoutubeOpenGL", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -118,6 +122,31 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
+
+		//Initializing matrices for 3d transforms
+		glm::mat4 modelMat = glm::mat4(1.0f);
+		glm::mat4 viewMat = glm::mat4(1.0f);
+		glm::mat4 projMat = glm::mat4(1.0f);
+
+		//Moving the world away from the camera
+		viewMat = glm::translate(viewMat, glm::vec3(0.0f, -0.5f, -2.0f));
+
+
+		//Initializing the perspective projection matrix
+		projMat = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
+
+		// Assigning the matrices to the shader
+		int modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMat");
+		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMat));
+		int viewMatrixLocation = glGetUniformLocation(shaderProgram.ID, "viewMat");
+		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMat));
+		int projMatrixLocation = glGetUniformLocation(shaderProgram.ID, "projMat");
+		glUniformMatrix4fv(projMatrixLocation, 1, GL_FALSE, glm::value_ptr(projMat));
+
+
+
+
+
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
 		glUniform1f(uniID, 0.5f);
 		// Binds texture so that is appears in rendering
