@@ -116,23 +116,37 @@ int main()
 	/*Texture popCat("pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	popCat.texUnit(shaderProgram, "tex0", 0);*/
 
+	float rotation = 0.0f;
+	double prevTime = glfwGetTime();
 
-
+	//Enabling z-buffering
+	glEnable(GL_DEPTH_TEST);
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and assign the new color to it
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
 		shaderProgram.Activate();
+
+
+		double currentTime = glfwGetTime();
+		if (currentTime - prevTime >= 1.0 / 60.0) {
+			rotation += 0.5f;
+			prevTime = currentTime;
+		}
+
 
 		//Initializing matrices for 3d transforms
 		glm::mat4 modelMat = glm::mat4(1.0f);
 		glm::mat4 viewMat = glm::mat4(1.0f);
 		glm::mat4 projMat = glm::mat4(1.0f);
 
+		// Rotating the model along Y axis
+		modelMat = glm::rotate(modelMat, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+		
 		//Moving the world away from the camera
 		viewMat = glm::translate(viewMat, glm::vec3(0.0f, -0.5f, -2.0f));
 
