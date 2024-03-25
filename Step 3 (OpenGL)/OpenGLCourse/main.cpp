@@ -16,7 +16,7 @@ namespace fs = std::filesystem;
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
-
+#include"Camera.h"
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 800;
 
@@ -99,9 +99,6 @@ int main()
 	VBO1.Unbind();
 	EBO1.Unbind();
 
-	// Gets ID of uniform called "scale"
-	GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-
 
 
 	
@@ -116,11 +113,14 @@ int main()
 	/*Texture popCat("pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	popCat.texUnit(shaderProgram, "tex0", 0);*/
 
-	float rotation = 0.0f;
-	double prevTime = glfwGetTime();
 
 	//Enabling z-buffering
 	glEnable(GL_DEPTH_TEST);
+
+
+	Camera camera(SCREEN_WIDTH, SCREEN_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+
+
 	// Main while loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -132,42 +132,7 @@ int main()
 		shaderProgram.Activate();
 
 
-		double currentTime = glfwGetTime();
-		if (currentTime - prevTime >= 1.0 / 60.0) {
-			rotation += 0.5f;
-			prevTime = currentTime;
-		}
-
-
-		//Initializing matrices for 3d transforms
-		glm::mat4 modelMat = glm::mat4(1.0f);
-		glm::mat4 viewMat = glm::mat4(1.0f);
-		glm::mat4 projMat = glm::mat4(1.0f);
-
-		// Rotating the model along Y axis
-		modelMat = glm::rotate(modelMat, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
-		
-		//Moving the world away from the camera
-		viewMat = glm::translate(viewMat, glm::vec3(0.0f, -0.5f, -2.0f));
-
-
-		//Initializing the perspective projection matrix
-		projMat = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-
-		// Assigning the matrices to the shader
-		int modelMatrixLocation = glGetUniformLocation(shaderProgram.ID, "modelMat");
-		glUniformMatrix4fv(modelMatrixLocation, 1, GL_FALSE, glm::value_ptr(modelMat));
-		int viewMatrixLocation = glGetUniformLocation(shaderProgram.ID, "viewMat");
-		glUniformMatrix4fv(viewMatrixLocation, 1, GL_FALSE, glm::value_ptr(viewMat));
-		int projMatrixLocation = glGetUniformLocation(shaderProgram.ID, "projMat");
-		glUniformMatrix4fv(projMatrixLocation, 1, GL_FALSE, glm::value_ptr(projMat));
-
-
-
-
-
-		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
-		glUniform1f(uniID, 0.5f);
+		camera.Matrix(45.0, 0.1f, 100.0f, shaderProgram, "camMatrix");
 		// Binds texture so that is appears in rendering
 		popCat.Bind();
 		// Bind the VAO so OpenGL knows to use it
