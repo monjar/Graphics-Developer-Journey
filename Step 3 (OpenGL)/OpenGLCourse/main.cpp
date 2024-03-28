@@ -204,8 +204,12 @@ int main()
 	std::string texPath = "/Resources/Textures/";
 
 	// Texture
-	Texture popCat((parentDir + texPath + "planks.png").c_str(), GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
+	Texture popCat((parentDir + texPath + "planks.png").c_str(), GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE);
 	popCat.texUnit(shaderProgram, "tex0", 0);
+
+
+	Texture planksSpecTex((parentDir + texPath + "planksSpec.png").c_str(), GL_TEXTURE_2D, 1, GL_RED, GL_UNSIGNED_BYTE);
+	planksSpecTex.texUnit(shaderProgram, "tex1", 1);
 
 	// Original code from the tutorial
 	/*Texture popCat("pop_cat.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
@@ -241,6 +245,7 @@ int main()
 		camera.Matrix(shaderProgram, "camMatrix");
 		// Binds texture so that is appears in rendering
 		popCat.Bind();
+		planksSpecTex.Bind();
 		// Bind the VAO so OpenGL knows to use it
 		VAO1.Bind();
 		// Draw primitives, number of indices, datatype of indices, index of indices

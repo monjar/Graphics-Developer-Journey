@@ -1,8 +1,7 @@
-#include"texture.h"
+#include"Texture.h"
 
 Texture::Texture(const char* image, GLenum texType, GLuint slot, GLenum format, GLenum pixelType)
 {
-
 	// Assigns the type of the texture ot the texture object
 	type = texType;
 
@@ -56,8 +55,8 @@ void Texture::texUnit(Shader& shader, const char* uniform, GLuint unit)
 
 void Texture::Bind()
 {
-	glBindTexture(type, ID);
 	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(type, ID);
 }
 
 void Texture::Unbind()
