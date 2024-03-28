@@ -12,7 +12,31 @@ uniform vec4 lightColor;
 uniform float ambientIntensity;
 
 
+vec4 direcLight()
+{
+	float ambient = 0.20f;
+
+	vec3 lightDirection = normalize(vec3(1.0f, 1.0f, 0.0f));
+	float diffuse = max(dot(normal, lightDirection), 0.0f);
+
+	float specularLight = 0.50f;
+	vec3 viewDirection = normalize(camPos - pos);
+	vec3 reflectionDirection = reflect(-lightDirection, normal);
+	float specAmount = pow(max(dot(viewDirection, reflectionDirection), 0.0f), 16);
+	float specular = specAmount * specularLight;
+
+	return (texture(tex0, texCoord) * (diffuse + ambient) + texture(tex1, texCoord).r * specular) * lightColor;
+}
+
+
 vec4 pointLight(){
+
+
+
+	float distanceToLight = length(lightPos - pos);
+	float quadCoef = 0.5;
+	float linearCoef = 0.1;
+	float lightDistanceMultiplier = 1.0f / (quadCoef * distanceToLight * distanceToLight + linearCoef * distanceToLight + 1.0f);
 	vec3 lightDir = normalize(lightPos - pos);
 
    float diffuse = max(dot(normal, lightDir) , 0.0f);
@@ -23,7 +47,7 @@ vec4 pointLight(){
 
    float specular = pow(max(dot(viewDir, reflectionDir), 0.0f), 16) * specLight;
 
-   return texture(tex0, texCoord) * lightColor * (diffuse + ambientIntensity) + texture(tex1, texCoord).r * specular;
+   return texture(tex0, texCoord) * lightColor * (diffuse * lightDistanceMultiplier + ambientIntensity) + texture(tex1, texCoord).r * specular * lightDistanceMultiplier;
 
 }
 void main()
