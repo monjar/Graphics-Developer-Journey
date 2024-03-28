@@ -10,9 +10,10 @@ uniform vec3 lightPos;
 uniform vec3 camPos;
 uniform vec4 lightColor;
 uniform float ambientIntensity;
-void main()
-{
-   vec3 lightDir = normalize(lightPos - pos);
+
+
+vec4 pointLight(){
+	vec3 lightDir = normalize(lightPos - pos);
 
    float diffuse = max(dot(normal, lightDir) , 0.0f);
 
@@ -22,5 +23,11 @@ void main()
 
    float specular = pow(max(dot(viewDir, reflectionDir), 0.0f), 16) * specLight;
 
-   FragColor = texture(tex0, texCoord) * lightColor * (diffuse + ambientIntensity) + texture(tex1, texCoord).r * specular;
+   return texture(tex0, texCoord) * lightColor * (diffuse + ambientIntensity) + texture(tex1, texCoord).r * specular;
+
+}
+void main()
+{
+	FragColor = pointLight();
+  
 }

@@ -220,7 +220,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 
 
-	Camera camera(SCREEN_WIDTH, SCREEN_HEIGHT, glm::vec3(0.0f, 0.0f, 2.0f));
+	Camera camera(SCREEN_WIDTH, SCREEN_HEIGHT, glm::vec3(0.0f, 2.0f, 3.0f));
 
 
 	// Main while loop
