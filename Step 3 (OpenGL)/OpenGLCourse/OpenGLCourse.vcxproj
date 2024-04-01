@@ -164,6 +164,8 @@
     <ClInclude Include="VBO.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\Resources\Textures\planks.png" />
+    <Image Include="..\Resources\Textures\planksSpec.png" />
     <Image Include="birdy.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
